@@ -1,4 +1,5 @@
 # FACT: Foundation model for calcium-like transient extraction and neuronal footprint segmentation
+![alt text](FACT.jpg)
 
 FACT (Find Any Calcium-like Transients) is a foundation model designed for calcium-like transient extraction from functional imaging videos. This repository contains the implementation of our model, including installation, inference, and evaluation guidance.
 
