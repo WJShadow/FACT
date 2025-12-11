@@ -124,7 +124,7 @@ with torch.no_grad():
     test_inputs = torch.unsqueeze(input_img_tensor, 0)
     test_inputs = torch.unsqueeze(test_inputs, 1)
     test_outputs = sliding_window_inference(
-        test_inputs, (128, 64, 64), 32, model, overlap=[0.6,0.2,0.2], progress=True, mode="constant", 
+        test_inputs, (128, 64, 64), sw_batch_size=32, model, overlap=[0.6,0.2,0.2], progress=True, mode="constant", 
         device=torch.device('cpu'), sw_device=device, 
     )
 
@@ -179,7 +179,7 @@ We welcome contributions to improve FACT. Please:
 ## 🐛 Troubleshooting
 
 ### Common Issues
-1. **CUDA out of memory**: Reduce batch size in SW inference configuration (default=32 for VRAM>=24GB)
+1. **CUDA out of memory**: Reduce batch size in SW inference configuration (sw_batch_size=[Suitable batch size]) (default=32 for VRAM>=24GB)
 2. **Missing dependencies**: Ensure all packages in `environment_modif.yml` are installed, for errors during installation please try installing corresponding packages manually
 3. **Python version mismatch**: Verify Python version is exactly 3.8.18
 
