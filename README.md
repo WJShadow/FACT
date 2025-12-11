@@ -18,7 +18,7 @@ FACT (Find Any Calcium-like Transients) is a foundation model designed for calci
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/FACT.git
+git clone https://github.com/WJShadow/FACT.git 
 cd FACT
 ```
 
