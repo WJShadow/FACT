@@ -52,9 +52,12 @@ python -c "import torch; print(f'PyTorch version: {torch.__version__}')"
 python -c "import sys; print(f'Python version: {sys.version}')"
 python -c "import sys; from monai.config import print_config; print_config()"
 ```
+The installation procedure typically takes around 3-10 mins on a Win10 PC, mainly depending on the network status
+
+### Demo data and reproduction data download
+Please refer to data/Data_link.txt for link of data repository and download instruction
 
 ---
-
 ## 📁 Project Structure
 ```
 FACT/
