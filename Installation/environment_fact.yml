@@ -1,4 +1,4 @@
-name: fact_test
+name: fact_genl
 # Note: If you encounter permission issues, you can try the following solutions:
 # Method 1: Use --prefix to specify the installation path (recommended)
 #   Create environment:
