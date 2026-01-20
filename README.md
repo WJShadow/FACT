@@ -23,28 +23,75 @@ cd FACT
 ```
 
 ### Step 2: Create Conda Environment
-We provide two methods to set up the environment:
+We provide three methods to set up the environment:
 
 #### Method A: Using our environment file (Recommended)
 ```bash
 conda env create -f Installation/environment_modif.yml
 conda activate FACT
 ```
+If versions of packages could not be found, or any error encountered during installation, try using the following general version:
+```bash
+conda env create -f Installation/environment_fact.yml
+conda activate fact_genl
+```
 
 #### Method B: Manual Setup
 If you prefer to create the environment manually:
 ```bash
-conda create -n FACT python=3.8.18
+conda create -n FACT python=3.9
 conda activate FACT
 
 # Install core dependencies
-conda install pytorch=2.1.0=py3.8_cuda12.1_cudnn8_0 -c pytorch
+conda install pytorch
 pip install numpy==1.24.4 
 pip install jupyter notebook tqdm
 
 # Install additional packages from our requirements
-conda env update -f environment_modif.yml
+conda env update -f Installation/environment_fact.yml
 ```
+
+#### Method C: Using Pre-packaged Environment (Windows 64-bit only)
+For Windows 64-bit users, you can install the environment directly from a pre-packaged archive:
+
+1. **Download the environment package**: Download `fact_pub_windows64.tar.gz` from the repository:
+
+https://drive.google.com/drive/folders/1nbmOXHgfERIpQDpmxguZC49JDZrOVgVA?usp=sharing
+
+2. **Extract the environment**:
+   ```bash
+   # Create a directory for the environment (recommended location)
+   mkdir %USERPROFILE%\.conda\envs\fact_pub
+   
+   # Extract the archive to the environment directory
+   # Using PowerShell (recommended):
+   tar -xzf fact_pub_windows64.tar.gz -C %USERPROFILE%\.conda\envs\fact_pub
+   
+   # Or using 7-Zip or WinRAR: Extract all files to %USERPROFILE%\.conda\envs\fact_pub
+   ```
+
+3. **Activate the environment**:
+   ```bash
+   # Method 1: Using full path (recommended)
+   conda activate %USERPROFILE%\.conda\envs\fact_pub
+   
+   # Method 2: If the path is recognized by conda
+   conda activate fact_pub
+   ```
+
+4. **Initialize the environment** (first time only):
+   ```bash
+   # After activation, run this to fix paths and activate scripts
+   %USERPROFILE%\.conda\envs\fact_pub\Scripts\activate.bat
+   ```
+
+5. **Verify the installation**:
+   ```bash
+   python -c "import torch; print(f'PyTorch version: {torch.__version__}')"
+   python -c "import sys; print(f'Python version: {sys.version}')"
+   ```
+
+**Note**: This method is only for Windows 64-bit systems. The packaged environment contains all dependencies pre-installed, which can save significant installation time (typically 1-2 minutes vs 3-10 minutes for Method A/B).
 
 ### Step 3: Verify Installation
 ```python
@@ -139,7 +186,10 @@ with torch.no_grad():
 
 To reproduce our paper's results:
 
-Please follow the instruction in each jupyter nootbook for inference and evaluation
+1. Setup the conda environment according to instructions in [Installation & Environment Setup]
+2. Download all data from link in [data/Data_link.txt] and place them in [data/]
+3. Locate notebooks containing 'Rep' in the filenames
+4. Follow steps described in the cells to reproduce results of each dataset
 ---
 
 ## ⚖️ License & Usage
@@ -183,8 +233,9 @@ We welcome contributions to improve FACT. Please:
 
 ### Common Issues
 1. **CUDA out of memory**: Reduce batch size in SW inference configuration (sw_batch_size=[Suitable batch size]) (default=32 for VRAM>=24GB)
-2. **Missing dependencies**: Ensure all packages in `environment_modif.yml` are installed, for errors during installation please try installing corresponding packages manually
-3. **Python version mismatch**: Verify Python version is exactly 3.8.18
+2. **Missing dependencies**: Ensure all packages in `environment_modif.yml` or `environment_fact.yml` are installed (depending on which you utilized for setting up the environment), for errors during installation please try installing corresponding packages manually
+3. **Python version mismatch**: Verify Python version is exactly 3.8.18(in `environment_modif.yml`) or 3.9(in `environment_fact.yml`)
+4. For any other issues not described above, or could not be solved through instructions given, contact the authors or submit an issue.
 
 ### Get Help
 - Open an Issue on GitHub for bugs or questions

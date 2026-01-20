@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 
-# 可选：更高效的向量化版本
 def combine_masks(mask_show, std_img, alpha=0.5, brightness_factor=1.0, mask_threshold=10):
     """
     Overlay masks on the target video
