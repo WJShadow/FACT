@@ -1,0 +1,54 @@
+name: fact_test
+# Note: If you encounter permission issues, you can try the following solutions:
+# Method 1: Use --prefix to specify the installation path (recommended)
+#   Create environment:
+#     Windows PowerShell: conda env create -f environment_fact.yml -p $env:USERPROFILE\.conda\envs\fact_test
+#     Windows CMD:        conda env create -f environment_fact.yml -p %USERPROFILE%\.conda\envs\fact_test
+#     Linux/Mac:          conda env create -f environment_fact.yml -p ~/.conda/envs/fact_test
+#   Activate environment:
+#     Windows PowerShell: conda activate $env:USERPROFILE\.conda\envs\fact_test
+#     Windows CMD:        conda activate %USERPROFILE%\.conda\envs\fact_test
+#     Linux/Mac:          conda activate ~/.conda/envs/fact_test
+#     Or simply use the environment name (if the path is under conda's envs directory): conda activate fact_test
+# Method 2: Create the environment first, then use the install_pip_packages.bat/sh script to install pip packages (use --user)
+# Method 3: Run the conda env create command as an administrator
+channels:
+  - pytorch
+  - conda-forge
+  - nvidia
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+  - defaults
+dependencies:
+  - python=3.9
+  - pytorch
+  - torchvision
+  - matplotlib
+  - pillow
+  - tqdm
+  - jupyter
+  - SimpleITK
+  - pip
+  # If you encounter permission issues, please refer to the note at the beginning of this file for alternative solutions.
+  - pip:
+    - monai
+    - einops
+    - numba
+    - opencv-python<4.9
+    - scikit-image
+    - scikit-learn
+    - tifffile
+    - scanimage-tiff-reader
+    - hdf5storage
+    - nibabel
+    - notebook
+    - ipython
+    - ipykernel
+    - pandas
+    - psutil
+    - h5py
+    - transformers
+    - lmdb
+    - numpy<2.0
+    - scipy<1.9

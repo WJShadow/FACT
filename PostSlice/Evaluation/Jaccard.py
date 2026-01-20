@@ -2,7 +2,6 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import cdist
-import cupy as cp
 
 def evaluation_jaccard(infer_masks, GT_masks, thresh_jacdist):
     '''Evaluating the segmentation results according to the jaccard distance between masks
@@ -49,43 +48,3 @@ def evaluation_jaccard(infer_masks, GT_masks, thresh_jacdist):
 
     return [match_GT_list, Precision, Recall, F1]
 
-
-def fast_jaccard_cp(masks1, masks2):
-    '''
-    Calculate the jaccard distance matrix between two sets of masks using GPU acceleration
-
-    Inputs:
-    -------
-        masks1, masks2 NxP, MxP sparse matrix : infer masks and GT masks in sparse matrix format
-    
-    Outputs:
-    --------
-        mat_jac_np ndarray NxM : jaccard distance matrix in sparse matrix format
-        
-    '''
-    with cp.cuda.Device(1):
-        mata = cp.asarray(masks1.A, dtype=cp.float64)
-        matb = cp.asarray(masks2.A, dtype=cp.float64)
-
-        mat_I = mata @ matb.T
-
-        areaa = mata.sum(axis=1)
-        areab = matb.sum(axis=1)
-        areama = cp.repeat(cp.expand_dims(areaa,axis=1), areab.shape[0], axis=1)
-        areamb = cp.repeat(cp.expand_dims(areab,axis=0), areaa.shape[0], axis=0)
-        mat_U = areama + areamb - mat_I
-        
-        mat_IoU = cp.divide(mat_I, mat_U)
-        mat_jac = 1 - mat_IoU
-        mat_jac_np = cp.asnumpy(mat_jac)
-
-        del matb
-        del mata
-        del areamb
-        del areama
-        del mat_I
-        del mat_U
-        del mat_IoU
-        del mat_jac
-
-    return mat_jac_np
