@@ -1,0 +1,27 @@
+# FACT dependencies for Google Colab (PyTorch/torchvision provided by Colab)
+# Aligned with Installation/environment_fact.yml pip section; gdown added for demo download.
+# Use: pip install -r requirements_colab.txt
+
+monai
+einops
+numba
+opencv-python<4.9
+scikit-image
+scikit-learn
+tifffile
+scanimage-tiff-reader
+hdf5storage
+nibabel
+notebook
+ipython
+ipykernel
+pandas
+psutil
+h5py
+transformers
+lmdb
+numpy<2.0
+scipy<1.9
+roifile
+SimpleITK
+gdown
