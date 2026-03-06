@@ -18,7 +18,7 @@ Removed environment_modif.yml from recommended installation guidance.
 ## 🔧 Installation & Environment Setup
 
 ### Prerequisites
-- **Python**: 3.8.18 (required)
+- **Python**: 3.9 (required)
 - **Package Manager**: We recommend using `conda` or `mamba` for environment management
 
 ### Step 1: Clone the Repository
