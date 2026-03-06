@@ -10,6 +10,11 @@ FACT (Find Any Calcium-like Transients) is a foundation model designed for calci
 
 ---
 
+### Update::
+
+Tested fact_genl environment on Win64 and Ubuntu 18.04 systems, added packages for output files.
+Removed environment_modif.yml from recommended installation guidance.
+
 ## 🔧 Installation & Environment Setup
 
 ### Prerequisites
@@ -26,11 +31,6 @@ cd FACT
 We provide three methods to set up the environment:
 
 #### Method A: Using our environment file (Recommended)
-```bash
-conda env create -f Installation/environment_modif.yml
-conda activate FACT
-```
-If versions of packages could not be found, or any error encountered during installation, try using the following general version:
 ```bash
 conda env create -f Installation/environment_fact.yml
 conda activate fact_genl
