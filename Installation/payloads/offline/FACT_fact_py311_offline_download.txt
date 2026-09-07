@@ -1,0 +1,39 @@
+FACT fact_py311 offline installer download
+===========================================
+
+Google Drive URL:
+https://drive.google.com/file/d/1cnJSZLHRWYwF34n71MbonNF1CHETFpzO/view?usp=drive_link
+
+The Git repository contains the online installer only. Upload the complete
+FACT-fact_py311-offline package to Google Drive, then replace the placeholder
+above with its share link.
+
+Recommended upload file name:
+FACT-fact_py311-offline.zip
+
+After cloning the Git repository, download the ZIP into:
+Installation\payloads\offline\
+
+Use Windows Extract All and keep the default destination folder named:
+FACT-fact_py311-offline
+
+Then run:
+Installation\payloads\offline\FACT-fact_py311-offline\Install_FACT_Offline_on_Win64.bat
+
+Complete ZIP SHA-256:
+8bfade5c0ebeaf4aa91a6546e3f6ad0408b06e5ec26fff7b06931189b2d1802f
+
+The offline package must contain its own Installation\payloads\offline files,
+installer scripts, reference manifest, and Activate_FACT.bat. Do not upload
+only fact_py311-win64.tar.gz, because that archive alone is not a complete
+end-user installer.
+
+Verified internal payload hashes:
+Miniconda3-py311_24.5.0-0-Windows-x86_64.exe
+SHA-256: b0cc3e41f42e6cf491fd63ea9e87dccd7160e5328d542602873c69217179bc3b
+
+fact_py311-win64.tar.gz
+SHA-256: 286564b68f0e1edbfafa3e296f500a192deece675dd63e4b592b335b2112bfd6
+
+hdf5-1.14.3-nompi_h2b43c12_105.conda
+SHA-256: 56c803607a64b5117a8b4bcfdde722e4fa40970ddc4c61224b0981cbb70fb005

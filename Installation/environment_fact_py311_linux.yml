@@ -1,0 +1,49 @@
+# Portable Linux x86-64 environment for the FACT source release.
+# This file follows the tested fact_py311 package family without reusing
+# Windows-only build strings from environment_fact_py311.yml.
+#
+# Create and activate the environment with:
+#   conda env create -f Installation/environment_fact_py311_linux.yml
+#   conda activate fact_py311
+#
+# The CUDA runtime below targets NVIDIA CUDA 12.4. The environment can still
+# run on CPU when torch.cuda.is_available() is false, although inference will
+# be substantially slower.
+
+name: fact_py311
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pytorch=2.5.1
+  - pytorch-cuda=12.4
+  - torchvision=0.20.1
+  - numpy=1.26.4
+  - scipy=1.17.1
+  - scikit-image=0.26.0
+  - scikit-learn=1.8.0
+  - matplotlib=3.10.9
+  - pillow=10.4.0
+  - tqdm=4.67.3
+  - jupyter=1.1.1
+  - jupyterlab=4.5.7
+  - notebook=7.5.6
+  - ipython=9.13.0
+  - ipykernel=7.2.0
+  - ipywidgets=8.1.8
+  - simpleitk=2.5.3
+  - tifffile=2026.3.3
+  - pyside6=6.9.2
+  - pip:
+      - monai==1.5.2
+      - einops==0.8.2
+      - numba==0.65.1
+      - opencv-python==4.8.1.78
+      - scanimage-tiff-reader==1.4.1.4
+      - h5py==3.12.1
+      - hdf5storage==0.2.2
+      - roifile==2026.2.10

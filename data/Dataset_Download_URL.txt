@@ -1,0 +1,49 @@
+FACT notebook datasets download
+===============================
+
+Rep data (manual download only)
+--------------------------------
+https://drive.google.com/drive/folders/1N88iCF093rot6Pn70JHtC7WBhAkL3ddz?usp=sharing
+
+Download the NeuroFinder-Registered and STA_Evaluation folders from this link.
+Place both folders directly beneath data\; do not create an additional nested
+folder such as data\STA_Evaluation\STA_Evaluation\.
+
+Demo data
+---------
+GUI and Demo share link:
+https://drive.google.com/drive/folders/100HG79hDwNtgq8Pa977RwJA-zxx7tfj4?usp=sharing
+
+Direct Demo folder:
+https://drive.google.com/drive/folders/1wFA6jO82x-OEt2BMVXm9FisyT03diZO8?usp=sharing
+
+The recommended method is to double-click data\Download Demo data_(RUN ME).bat. It
+downloads only the five TIFF files required by the maintained Demo notebooks.
+Alternatively, choose a Demo-data option in GUI\Download FACT-GUI_(RUN ME).bat, or
+download the required Demo files manually from the direct Demo folder.
+
+Required layout
+---------------
+data\
+|-- Demo\
+|   |-- GUI-Config\
+|   |   `-- five .fact.json configurations
+|   |-- Meso\Data_meso_strip.tif
+|   |-- Mouse hippocampus\Data_CA1.tif
+|   |-- Mouse hippocampus\Data_CA3.tif
+|   |-- MouseBrainCortex\MouseBrainCortex_quat.tiff
+|   `-- Rhesus\Rhesus_quat.tif
+|-- NeuroFinder-Registered\
+|   |-- 0100_test\ and 0100_train\
+|   |-- 0101_test\ and 0101_train\
+|   |-- 0200_test\ and 0200_train\
+|   `-- 0201_test\ and 0201_train\
+`-- STA_Evaluation\
+    |-- Vid01.tiff through Vid08.tiff
+    `-- GT\Vid01.mat through Vid08.mat
+
+The Rep_NF notebooks require TIFF and __GTmasks.mat pairs beneath
+data\NeuroFinder-Registered. The Rep_EVA_STAccuracy notebooks require the
+Vid01-Vid08 TIFF files and matching GT MAT files beneath data\STA_Evaluation.
+Run Jupyter with the repository root as its working directory after the data
+have been installed.

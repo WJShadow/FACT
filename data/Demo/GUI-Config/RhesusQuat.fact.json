@@ -1,0 +1,43 @@
+{
+  "format": "FACT Pipeline configuration",
+  "version": 4,
+  "demo": {
+    "experiment": "Rhesus cortex",
+    "sample": "RhesusQuat",
+    "description": "Quantized rhesus trial aligned with the released fast-inference notebook"
+  },
+  "input": {
+    "path": "data/Demo/Rhesus/Rhesus_quat.tif",
+    "shape": [7001, 256, 256],
+    "input_mode": "pre_normalized_0_1",
+    "normalization_max_value": null
+  },
+  "parameters": {
+    "avg_rad": 4.0,
+    "max_rad": 12.0,
+    "network_mode": "fast",
+    "frame_rate": 15.0,
+    "threshold_mode": "auto",
+    "brightness": 0,
+    "contrast": 100,
+    "min_area": 20,
+    "thresh_com": 5.0,
+    "thresh_refine": 0.3,
+    "thresh_iou": 0.5,
+    "thresh_acti": 2,
+    "max_area": 678,
+    "guided_unmix_area": 75,
+    "sc2_circularity": 0.2,
+    "sc2_elongation": 0.4,
+    "fact_guided_demixing": false,
+    "overlap_demixing": false,
+    "postprocess_video_source": "normalized",
+    "sc1_mode": 0,
+    "sc2": false,
+    "sc3": false,
+    "sc4": false,
+    "sc4_min_area": 30,
+    "show_masks": true,
+    "mask_opacity": 0.3
+  }
+}

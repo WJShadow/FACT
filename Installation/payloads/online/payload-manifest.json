@@ -1,0 +1,19 @@
+﻿{
+    "schema":  1,
+    "package":  "FACT fact_py311 online environment payload",
+    "environmentName":  "fact_py311",
+    "sourceEnvironmentName":  "fact_py311",
+    "containsCodeOrData":  false,
+    "files":  [
+                  {
+                      "path":  "hdf5-1.14.3-nompi_h2b43c12_105.conda",
+                      "size":  2039111,
+                      "sha256":  "56c803607a64b5117a8b4bcfdde722e4fa40970ddc4c61224b0981cbb70fb005"
+                  },
+                  {
+                      "path":  "../../reference/fact_py311_reference.json",
+                      "size":  125603,
+                      "sha256":  "b1cd54927a124d516ee2f851330b5b032cd7b154772dc0f1960da5fa2fe1cad2"
+                  }
+              ]
+}

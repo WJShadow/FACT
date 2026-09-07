@@ -1,0 +1,22 @@
+FACT packaged GUI download
+===========================
+
+GUI and Demo share link:
+https://drive.google.com/drive/folders/100HG79hDwNtgq8Pa977RwJA-zxx7tfj4?usp=sharing
+
+On Windows x64, double-click GUI\Download FACT-GUI_(RUN ME).bat. Before downloading,
+it offers these choices:
+
+1. FACT-GUI only (about 4.7 GiB installed; allow about 5.2 GiB free).
+2. FACT-GUI plus basic demo data (about 6.4 GiB installed; allow about 7.1 GiB free).
+3. FACT-GUI plus all demo data (about 10.7 GiB installed; allow about 11.8 GiB free).
+4. Cancel.
+
+The downloader places FACT-Pipeline.exe and FACT-Pipeline.runtime directly in
+this GUI folder. It asks before replacing a complete existing installation.
+The packaged GUI expects its Demo configuration files under:
+data\Demo\GUI-Config\
+
+Demo data can also be downloaded separately with data\Download Demo data_(RUN ME).bat
+or manually from the links in data\Dataset_Download_URL.txt. Rep data is
+manual-download only and is documented there as well.

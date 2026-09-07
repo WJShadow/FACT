@@ -1,0 +1,43 @@
+{
+  "format": "FACT Pipeline configuration",
+  "version": 4,
+  "demo": {
+    "experiment": "Mouse hippocampus",
+    "sample": "CA3",
+    "description": "CA3 trial aligned with the released dense-inference notebook"
+  },
+  "input": {
+    "path": "data/Demo/Mouse hippocampus/Data_CA3.tif",
+    "shape": [500, 472, 472],
+    "input_mode": "auto_estimate",
+    "normalization_max_value": null
+  },
+  "parameters": {
+    "avg_rad": 6.0,
+    "max_rad": 6.5,
+    "network_mode": "dense",
+    "frame_rate": 15.0,
+    "threshold_mode": "fixed_-2",
+    "brightness": 0,
+    "contrast": 100,
+    "min_area": 20,
+    "thresh_com": 5.0,
+    "thresh_refine": 0.1,
+    "thresh_iou": 0.7,
+    "thresh_acti": 1,
+    "max_area": 200,
+    "guided_unmix_area": 200,
+    "sc2_circularity": 0.4,
+    "sc2_elongation": 0.4,
+    "fact_guided_demixing": true,
+    "overlap_demixing": true,
+    "postprocess_video_source": "normalized",
+    "sc1_mode": 0,
+    "sc2": true,
+    "sc3": false,
+    "sc4": true,
+    "sc4_min_area": 20,
+    "show_masks": true,
+    "mask_opacity": 0.3
+  }
+}

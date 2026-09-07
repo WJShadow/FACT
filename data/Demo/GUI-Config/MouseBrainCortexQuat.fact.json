@@ -1,0 +1,43 @@
+{
+  "format": "FACT Pipeline configuration",
+  "version": 4,
+  "demo": {
+    "experiment": "Mouse brain cortex",
+    "sample": "MouseBrainCortexQuat",
+    "description": "Quantized mouse brain cortex trial aligned with the released fast-inference notebook"
+  },
+  "input": {
+    "path": "data/Demo/MouseBrainCortex/MouseBrainCortex_quat.tiff",
+    "shape": [8000, 252, 232],
+    "input_mode": "pre_normalized_0_1",
+    "normalization_max_value": null
+  },
+  "parameters": {
+    "avg_rad": 5.0,
+    "max_rad": 7.0,
+    "network_mode": "fast",
+    "frame_rate": 15.0,
+    "threshold_mode": "fixed_0",
+    "brightness": 0,
+    "contrast": 100,
+    "min_area": 30,
+    "thresh_com": 4.0,
+    "thresh_refine": 0.2,
+    "thresh_iou": 0.7,
+    "thresh_acti": 4,
+    "max_area": 230,
+    "guided_unmix_area": 118,
+    "sc2_circularity": 0.2,
+    "sc2_elongation": 0.4,
+    "fact_guided_demixing": false,
+    "overlap_demixing": false,
+    "postprocess_video_source": "normalized",
+    "sc1_mode": 0,
+    "sc2": false,
+    "sc3": false,
+    "sc4": false,
+    "sc4_min_area": 30,
+    "show_masks": true,
+    "mask_opacity": 0.3
+  }
+}
