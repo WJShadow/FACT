@@ -1,6 +1,6 @@
 # FACT GUI quick start
 
-Follow this illustrated workflow with the MouseBrainCortex demo, then use the same sequence for your own recording.
+Follow this illustrated workflow with the MouseBrainCortex demo, then choose **Instruction** (menu) -> **New Data Trial** to run an instruction for new data, and follow the same sequence for your own recording.
 
 ### 1. Launch and load the demo
 

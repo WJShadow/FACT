@@ -317,7 +317,7 @@ The released model weights are expected at:
 ModelParams/FACT_Modelparams.pt
 ```
 
-## Instructions for use
+## Instructions for use (code version)
 
 To run FACT on a user-provided recording, supply a three-dimensional grayscale TIFF video. The input used by the maintained notebooks is a NumPy array of shape `(T, H, W)`, where `T` is the number of frames. After network inference, apply FACT-guided background removal in post-processing to obtain neuronal masks and traces. The Windows GUI is recommended for inspecting the spatiotemporal network prediction, masks, and traces (see [Windows GUI download and installation](#windows-gui-download-and-installation)). Set `target_radius` to the expected mean neuronal radius in pixels.
 
