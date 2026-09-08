@@ -31,7 +31,32 @@ An NVIDIA GPU constitutes non-standard hardware relative to a CPU-only desktop c
 
 ## Installation
 
-### Clone the repository
+### GUI-only: standalone GUI option (Windows 10/11)
+
+FACT is also distributed as a stand-alone packaged GUI for 64-bit Windows 10
+and Windows 11. To run the supplied GUI demos or use FACT through the desktop
+application, you may download the GUI and Demo data without cloning this code
+repository or installing the notebook environment. Download them from the
+[GUI and Demo Google Drive share](https://drive.google.com/drive/folders/100HG79hDwNtgq8Pa977RwJA-zxx7tfj4?usp=sharing).
+
+Download the `GUI` folder together with the desired Demo data, keep the GUI
+executable beside its runtime directory, and preserve the `data\Demo\` layout
+described below. Clone the repository only when you need the notebooks,
+reproduction workflows, or source code.
+
+```text
+FACT-GUI-and-Demo/
+├── GUI/
+└── data/
+    └── Demo/
+        ├── GUI-Config/
+        ├── Meso/
+        ├── Mouse hippocampus/
+        ├── MouseBrainCortex/
+        └── Rhesus/
+```
+
+### Full Code Repository: Clone the repository
 
 ```bash
 git clone <REPOSITORY_URL>
@@ -137,7 +162,7 @@ python -m jupyter lab
 
 Visual Studio Code may also be used to run the notebooks; the Jupyter extension should be installed as described in the Visual Studio Code documentation.
 
-### Windows GUI download and installation
+### Windows GUI download and installation (in cloned code repository)
 
 The packaged GUI is currently available for Windows x64. The recommended
 method is to double-click:
@@ -151,6 +176,12 @@ demo data. The launcher downloads `FACT-Pipeline.exe` and
 `FACT-Pipeline.runtime` directly into `GUI/` and asks before replacing a
 complete existing installation.
 
+For the Demo data, either select **GUI plus basic demo data** or **GUI plus all
+demo data** in the launcher, or manually download the Demo folder from the
+[direct Demo Google Drive folder](https://drive.google.com/drive/folders/1wFA6jO82x-OEt2BMVXm9FisyT03diZO8?usp=sharing). For manual download, place
+the files under `data\Demo\` beside the `GUI\` directory, preserving the
+dataset folders and filenames shown in [Download Demo data](#download-demo-data).
+
 For manual installation, download the GUI folder from the [GUI and Demo Google
 Drive share](https://drive.google.com/drive/folders/100HG79hDwNtgq8Pa977RwJA-zxx7tfj4?usp=sharing), then place `FACT-Pipeline.exe` and its complete
 `FACT-Pipeline.runtime/` directory directly under `GUI/`. Do not move the
@@ -158,6 +189,48 @@ executable away from its runtime directory. See `GUI/Download_GUI_URL.txt` for
 current space requirements and details.
 
 The GUI accepts multipage `.tif` and `.tiff` videos, estimates the display and normalization range, runs FACT inference and post-processing, and provides interactive inspection of the network prediction, masks, and traces.
+
+<!-- FACT GUI illustrated quick start -->
+### GUI illustrated quick start
+
+Follow this illustrated workflow with the MouseBrainCortex demo, then use the same sequence for your own recording.
+
+#### 1. Launch and load the demo
+
+Run `GUI\Download FACT-GUI_(RUN ME).bat` and choose **GUI plus basic demo data**. Open `GUI\FACT-Pipeline.exe`, keeping `FACT-Pipeline.runtime` beside it. Choose **Demo → MouseBrainCortex**. The TIFF and saved parameters load together; keep those settings for your first run.
+
+![1. Load MouseBrainCortex from the Demo menu and confirm the input](GUI/Instructions/images/01-load-demo.png)
+
+#### 2. Run FACT Network
+
+Click **RUN FACT NETWORK** and follow **STATUS** until inference completes. Move **Frame** to compare Raw video and FACT Network Inference at the same time point. Scroll to zoom, drag to pan, and double-click to fit; both views move together.
+
+![2. Run the network and compare the synchronized video views](GUI/Instructions/images/02-network.png)
+
+#### 3. Run post-processing
+
+Scroll down the left sidebar to **RUN POST-PROCESSING**. Click it and wait for Page 2 to open automatically. The demo already supplies post-processing values; **Auto** is unavailable until its first post-processing run finishes.
+
+![3. Find the post-processing controls and run button in the sidebar](GUI/Instructions/images/03-postprocessing.png)
+
+#### 4. Inspect masks and traces
+
+Click a colored neuronal mask to display its ROI, background, and background-removed traces. Adjust **Opacity** or hide the colored overlay to inspect the underlying standard-deviation image. Scroll, drag, and double-click also zoom, pan, and reset the trace plot.
+
+![4. Select a neuron and inspect its masks and traces](GUI/Instructions/images/04-masks-traces.png)
+
+#### 5. Export results
+
+Open **Export**, choose NumPy, MATLAB, or HDF5, select the required components, then click **Choose directory...**. Use **File → Export Results...** when you also need network products and the effective run configuration.
+
+![5. Choose an export format, components, and destination](GUI/Instructions/images/05-export.png)
+
+#### 6. Use your own recording
+
+Choose **Load File** for a grayscale `(T, H, W)` TIFF, or **Load Folder** to concatenate compatible TIFFs along time. Set neuronal radii in pixels and the acquisition frame rate. Choose Fast or Dense and an appropriate **Normalization mode**; use **Automatic estimate** for ordinary input. Click **Auto**, then repeat network inference, post-processing, inspection, and export.
+
+![6. Set input, neuronal size, normalization, frame rate, and automatic post-processing values](GUI/Instructions/images/06-own-data.png)
+<!-- END FACT GUI illustrated quick start -->
 
 ## Demo notebooks
 
