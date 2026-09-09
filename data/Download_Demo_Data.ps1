@@ -44,7 +44,7 @@ function Assert-FreeSpace([string]$Path, [double]$RequiredGiB) {
 
 function New-StageDirectory {
     $stage = Join-Path $PSScriptRoot ('.FACT-download-staging-' + [guid]::NewGuid().ToString('N'))
-    New-Item -ItemType Directory -LiteralPath $stage | Out-Null
+    New-Item -ItemType Directory -Path $stage | Out-Null
     return $stage
 }
 
@@ -81,16 +81,24 @@ function Invoke-Gdown([string]$UvExe, [string[]]$GdownArguments) {
     if ($LASTEXITCODE -ne 0) { throw "gdown failed with exit code $LASTEXITCODE." }
 }
 
-function Get-DriveFolderEntries([string]$UvExe, [string]$FolderUrl) {
-    $json = & $UvExe 'tool' 'run' '--isolated' '--python' '3.12' '--from' 'gdown==6.0.0' 'gdown' $FolderUrl '--folder' '--json'
-    if ($LASTEXITCODE -ne 0) { throw "Unable to list the Google Drive folder (exit code $LASTEXITCODE)." }
+function Get-DriveFolderEntries([string]$UvExe, [string]$FolderUrl, [string]$Stage) {
+    $helper = Join-Path $Stage 'list_drive.py'
+    $code = @'
+import json
+import sys
+import gdown
+files = gdown.download_folder(url=sys.argv[1], skip_download=True, quiet=True, use_cookies=False)
+print(json.dumps([{'path': f.path, 'url': 'https://drive.google.com/uc?id=' + f.id} for f in files]))
+'@
+    [IO.File]::WriteAllText($helper, $code, [Text.UTF8Encoding]::new($false))
+    $json = & $UvExe tool run --isolated --python 3.12 --from gdown==6.0.0 python $helper $FolderUrl
+    if ($LASTEXITCODE -ne 0) { throw "Unable to list Google Drive files (exit code $LASTEXITCODE). Try again later." }
     try {
-        $entries = @($json | Out-String | ConvertFrom-Json)
-    } catch {
-        throw 'Google Drive returned an invalid folder listing. The folder may be unavailable or quota-limited.'
-    }
+        # Explicit enumeration is required by Windows PowerShell 5.1.
+        $entries = @($json | Out-String | ConvertFrom-Json | ForEach-Object { $_ })
+    } catch { throw 'Google Drive returned an invalid folder listing.' }
     $files = @($entries | Where-Object { $null -ne $_.url -and $null -ne $_.path })
-    if ($files.Count -eq 0) { throw 'The Google Drive folder listing contained no downloadable files.' }
+    if ($files.Count -eq 0) { throw 'Google Drive returned no downloadable files.' }
     return $files
 }
 
@@ -139,20 +147,20 @@ function Get-Confirmation([pscustomobject]$Status) {
     }
     if ($Status.Present.Count -gt 0) {
         Write-Host "Found $($Status.Present.Count) required file(s); $($Status.Missing.Count) are missing."
-        return Read-YesNo 'Download the complete package to staging and repair only the missing files?'
+        return Read-YesNo 'Download only the missing files to staging and repair this installation?'
     }
     return Read-YesNo 'Download the five required Demo TIFF files (about 6.1 GiB installed)?'
 }
 
 function Download-DemoFiles([string]$UvExe, [string]$Stage, [string[]]$Targets) {
-    $entries = Get-DriveFolderEntries $UvExe $DemoFolderUrl
+    $entries = Get-DriveFolderEntries $UvExe $DemoFolderUrl $Stage
     $payloadRoot = Join-Path $Stage 'demo-payload'
     foreach ($target in $Targets) {
         $entry = Find-DriveEntry $entries $target
         $outputPath = Join-Path $payloadRoot $target
         New-Item -ItemType Directory -Force -Path (Split-Path -Parent $outputPath) | Out-Null
         Write-Info "Downloading $target"
-        Invoke-Gdown $UvExe @($entry.url, '--fuzzy', '-O', $outputPath)
+        Invoke-Gdown $UvExe @($entry.url, '--no-cookies', '-O', $outputPath)
         if (-not (Test-Path -LiteralPath $outputPath -PathType Leaf) -or (Get-Item -LiteralPath $outputPath).Length -eq 0) {
             throw "The download for '$target' is missing or empty."
         }
@@ -182,7 +190,7 @@ function Install-DemoFiles([string]$PayloadRoot, [string[]]$Targets, [pscustomob
             $source = Join-Path $PayloadRoot $target
             $destination = Join-Path $DemoRoot $target
             New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
-            Move-Item -LiteralPath $source -Destination $destination -Force
+            [IO.File]::Move($source, $destination)
             $installed.Add($target)
         }
     } catch {
@@ -206,7 +214,18 @@ function Install-DemoFiles([string]$PayloadRoot, [string[]]$Targets, [pscustomob
     }
 }
 
+function Remove-CheckedDownloadPath([string]$Path, [string]$Root) {
+    $boundary = [IO.Path]::GetFullPath($Root).TrimEnd('\') + '\'
+    $candidate = [IO.Path]::GetFullPath($Path)
+    if (-not $candidate.StartsWith($boundary, [StringComparison]::OrdinalIgnoreCase)) { throw "Cleanup outside intended directory: $candidate" }
+    if (Test-Path -LiteralPath $candidate) { Remove-Item -LiteralPath $candidate -Recurse -Force }
+}
+
+if ($MyInvocation.InvocationName -eq '.') { return }
+
 $stage = $null
+$oldCache = $env:UV_CACHE_DIR
+$oldPython = $env:UV_PYTHON_INSTALL_DIR
 try {
     Write-Host 'FACT Demo data downloader' -ForegroundColor Green
     Write-Host "Destination: $DemoRoot"
@@ -220,14 +239,16 @@ try {
     Assert-FreeSpace $PSScriptRoot 6.8
     $stage = New-StageDirectory
     $uvExe = Get-UvExecutable $stage
-    $payload = Download-DemoFiles $uvExe $stage $RequiredDemoFiles
+    $payload = Download-DemoFiles $uvExe $stage @(if ($status.AllPresent) { $RequiredDemoFiles } else { $status.Missing })
     Install-DemoFiles $payload $RequiredDemoFiles $status $status.AllPresent $stage
     Write-Host 'Demo data download completed successfully.' -ForegroundColor Green
 } catch {
     Write-Host "Download failed: $($_.Exception.Message)" -ForegroundColor Red
     exit 1
 } finally {
+    $env:UV_CACHE_DIR = $oldCache
+    $env:UV_PYTHON_INSTALL_DIR = $oldPython
     if ($null -ne $stage -and (Test-Path -LiteralPath $stage)) {
-        Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-CheckedDownloadPath $stage $PSScriptRoot
     }
 }

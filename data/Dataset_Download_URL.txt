@@ -11,16 +11,25 @@ folder such as data\STA_Evaluation\STA_Evaluation\.
 
 Demo data
 ---------
-GUI and Demo share link:
-https://drive.google.com/drive/folders/100HG79hDwNtgq8Pa977RwJA-zxx7tfj4?usp=sharing
+Manual ZIP download folder:
+https://drive.google.com/drive/folders/1c3iSZWt9nLQAtM5WBqrPggZ9tPRCRXKl?usp=sharing
 
-Direct Demo folder:
-https://drive.google.com/drive/folders/1wFA6jO82x-OEt2BMVXm9FisyT03diZO8?usp=sharing
+Download data.zip individually, not the whole Drive folder or Download all.
+Extract its contained data folder into the repository root, so the demo files
+are under data\Demo\. Do not create an extra data\data\ folder.
+For manual GUI installation, download GUI.zip separately from the same link
+and place its contained GUI folder beside data. Avoid GUI\GUI\ nesting.
 
-The recommended method is to double-click data\Download Demo data_(RUN ME).bat. It
-downloads only the five TIFF files required by the maintained Demo notebooks.
-Alternatively, choose a Demo-data option in GUI\Download FACT-GUI_(RUN ME).bat, or
-download the required Demo files manually from the direct Demo folder.
+In a cloned repository, double-click data\Download Demo data_(RUN ME).bat to
+download the five required TIFFs automatically. Missing-file repair downloads
+only missing TIFFs. The GUI downloader also offers basic or all-demo options.
+
+For a standalone GUI trial with only MouseBrainCortex initially included:
+https://drive.google.com/file/d/1moZK8P6hIuX0UCIKTAgESQTkQ63N6kIB/view?usp=drive_link
+Extract the full light ZIP and run GUI\FACT-Pipeline.exe. Its optional
+data\Download Additional Demo Data_(RUN ME).bat downloads CA1+CA3 together,
+Meso, Rhesus, combinations, or all remaining demos. Restart the GUI afterward
+and select the downloaded data through the Demo menu.
 
 Required layout
 ---------------

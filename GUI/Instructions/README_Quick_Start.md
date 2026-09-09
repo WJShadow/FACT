@@ -4,9 +4,17 @@ Follow this illustrated workflow with the MouseBrainCortex demo, then choose **I
 
 ### 1. Launch and load the demo
 
-Run `GUI\Download FACT-GUI_(RUN ME).bat` and choose **GUI plus basic demo data**. Open `GUI\FACT-Pipeline.exe`, keeping `FACT-Pipeline.runtime` beside it. Choose **Demo → MouseBrainCortex**. The TIFF and saved parameters load together; keep those settings for your first run.
+For a standalone first trial, download [FACT-Pipeline_light.zip](https://drive.google.com/file/d/1moZK8P6hIuX0UCIKTAgESQTkQ63N6kIB/view?usp=drive_link) and extract the entire ZIP. If using a cloned repository instead, run `GUI\Download FACT-GUI_(RUN ME).bat` and choose **GUI plus basic demo data**. Open `GUI\FACT-Pipeline.exe`, keeping `FACT-Pipeline.runtime` beside it. Choose **Demo → MouseBrainCortex**. The TIFF and saved parameters load together; keep those settings for your first run.
 
 ![1. Load MouseBrainCortex from the Demo menu and confirm the input](images/01-load-demo.png)
+
+To install all demos manually, download `GUI.zip` and `data.zip` individually
+from the [ZIP download folder](https://drive.google.com/drive/folders/1c3iSZWt9nLQAtM5WBqrPggZ9tPRCRXKl?usp=sharing), then extract their contained
+`GUI/` and `data/` folders into the same parent folder. Avoid `GUI/GUI/` and
+`data/data/` nesting. In the light package, you can instead run
+`data\Download Additional Demo Data_(RUN ME).bat` to choose CA1+CA3 together,
+Meso, Rhesus, multiple groups, or all remaining demos. Existing files are
+skipped. Restart the GUI after downloading and select a dataset through **Demo**.
 
 ### 2. Run FACT Network
 

@@ -33,16 +33,32 @@ An NVIDIA GPU constitutes non-standard hardware relative to a CPU-only desktop c
 
 ### GUI-only: standalone GUI option (Windows 10/11)
 
-FACT is also distributed as a stand-alone packaged GUI for 64-bit Windows 10
-and Windows 11. To run the supplied GUI demos or use FACT through the desktop
-application, you may download the GUI and Demo data without cloning this code
-repository or installing the notebook environment. Download them from the
-[GUI and Demo Google Drive share](https://drive.google.com/drive/folders/100HG79hDwNtgq8Pa977RwJA-zxx7tfj4?usp=sharing).
+FACT is distributed as a standalone GUI for 64-bit Windows 10 and Windows 11.
+For the easiest first trial, download [FACT-Pipeline_light.zip](https://drive.google.com/file/d/1moZK8P6hIuX0UCIKTAgESQTkQ63N6kIB/view?usp=drive_link).
+This light package includes the complete GUI and one demo recording,
+MouseBrainCortex. No repository clone or Python installation is needed.
 
-Download the `GUI` folder together with the desired Demo data, keep the GUI
-executable beside its runtime directory, and preserve the `data\Demo\` layout
-described below. Clone the repository only when you need the notebooks,
-reproduction workflows, or source code.
+Use Windows **Extract All** to extract the entire ZIP, wait for extraction to
+finish, then open `GUI\FACT-Pipeline.exe` inside the extracted
+`FACT-Pipeline_light` folder. Keep `FACT-Pipeline.runtime` beside the executable.
+Choose **Demo → MouseBrainCortex** to load the included data and saved settings.
+
+For additional demos, run `data\Download Additional Demo Data_(RUN ME).bat`
+inside the light package. Choose **CA1 + CA3 together**, **Meso**, **Rhesus**,
+multiple groups, or **all remaining demos**. Internet is required for these
+downloads; existing files are skipped. Restart the GUI afterward and choose
+the downloaded dataset through **Demo**.
+
+For a manual installation with all five demos, open the
+[GUI and data ZIP download folder](https://drive.google.com/drive/folders/1c3iSZWt9nLQAtM5WBqrPggZ9tPRCRXKl?usp=sharing) and download
+`GUI.zip` and `data.zip` **individually**. Do not use Drive's folder-download or
+Download all option. Extract both ZIPs and place their contained `GUI/` and
+`data/` folders in the same parent folder. If Windows creates an extra outer
+folder, move the contained folder up: the final layout must not contain
+`GUI/GUI/` or `data/data/`. Open `GUI\FACT-Pipeline.exe` when extraction is complete.
+The layout below describes this full installation; the light package initially
+contains only `GUI-Config/` and `MouseBrainCortex/` under `data/Demo/`.
+Clone the repository only for notebooks, reproduction workflows, or source code.
 
 ```text
 FACT-GUI-and-Demo/
@@ -59,11 +75,9 @@ FACT-GUI-and-Demo/
 ### Full Code Repository: Clone the repository
 
 ```bash
-git clone <REPOSITORY_URL>
-cd FACT-Code-Release
+git clone https://github.com/WJShadow/FACT.git
+cd FACT
 ```
-
-Replace `<REPOSITORY_URL>` with the public URL of this repository after it is published.
 
 ### Windows 64-bit: online installation
 
@@ -172,21 +186,34 @@ GUI\Download FACT-GUI_(RUN ME).bat
 ```
 
 Before downloading, choose GUI only, GUI plus basic demo data, or GUI plus all
-demo data. The launcher downloads `FACT-Pipeline.exe` and
-`FACT-Pipeline.runtime` directly into `GUI/` and asks before replacing a
-complete existing installation.
+demo data. The launcher downloads and verifies `GUI.zip`, extracts the executable
+and complete runtime into `GUI/`, and downloads only the selected demo TIFFs.
+It asks before replacing a complete installation; a repair preserves existing
+files and downloads only missing demo TIFFs. Allow 8.5 GiB free for GUI only,
+10.4 GiB with the basic demo, or 15.2 GiB with all demos, including staging space.
 
-For the Demo data, either select **GUI plus basic demo data** or **GUI plus all
-demo data** in the launcher, or manually download the Demo folder from the
-[direct Demo Google Drive folder](https://drive.google.com/drive/folders/1wFA6jO82x-OEt2BMVXm9FisyT03diZO8?usp=sharing). For manual download, place
-the files under `data\Demo\` beside the `GUI\` directory, preserving the
-dataset folders and filenames shown in [Download Demo data](#download-demo-data).
+For manual installation, download `GUI.zip` and, if needed, `data.zip` individually
+from the [GUI and data ZIP download folder](https://drive.google.com/drive/folders/1c3iSZWt9nLQAtM5WBqrPggZ9tPRCRXKl?usp=sharing). Extract them
+and merge their contained `GUI/` and `data/` folders into the repository root.
+The executable must be at `GUI/FACT-Pipeline.exe`, its complete runtime at
+`GUI/FACT-Pipeline.runtime/`, and demo files under `data/Demo/`.
 
-For manual installation, download the GUI folder from the [GUI and Demo Google
-Drive share](https://drive.google.com/drive/folders/100HG79hDwNtgq8Pa977RwJA-zxx7tfj4?usp=sharing), then place `FACT-Pipeline.exe` and its complete
-`FACT-Pipeline.runtime/` directory directly under `GUI/`. Do not move the
-executable away from its runtime directory. See `GUI/Download_GUI_URL.txt` for
-current space requirements and details.
+```text
+FACT/
+├── GUI/                         ← extracted from GUI.zip
+│   ├── FACT-Pipeline.exe
+│   └── FACT-Pipeline.runtime/
+└── data/                        ← extracted from data.zip
+    └── Demo/
+        ├── GUI-Config/
+        ├── Mouse hippocampus/
+        ├── Meso/
+        ├── MouseBrainCortex/
+        └── Rhesus/
+```
+
+Avoid extra `GUI/GUI/` or `data/data/` nesting. Keep existing repository scripts
+and configuration files when merging folders. See `GUI/Download_GUI_URL.txt`.
 
 The GUI accepts multipage `.tif` and `.tiff` videos, estimates the display and normalization range, runs FACT inference and post-processing, and provides interactive inspection of the network prediction, masks, and traces.
 
@@ -197,7 +224,7 @@ Follow this illustrated workflow with the MouseBrainCortex demo, then use the sa
 
 #### 1. Launch and load the demo
 
-Run `GUI\Download FACT-GUI_(RUN ME).bat` and choose **GUI plus basic demo data**. Open `GUI\FACT-Pipeline.exe`, keeping `FACT-Pipeline.runtime` beside it. Choose **Demo → MouseBrainCortex**. The TIFF and saved parameters load together; keep those settings for your first run.
+For a standalone first trial, download [FACT-Pipeline_light.zip](https://drive.google.com/file/d/1moZK8P6hIuX0UCIKTAgESQTkQ63N6kIB/view?usp=drive_link) and extract the entire ZIP. If using a cloned repository instead, run `GUI\Download FACT-GUI_(RUN ME).bat` and choose **GUI plus basic demo data**. Open `GUI\FACT-Pipeline.exe`, keeping `FACT-Pipeline.runtime` beside it. Choose **Demo → MouseBrainCortex**. The TIFF and saved parameters load together; keep those settings for your first run.
 
 ![1. Load MouseBrainCortex from the Demo menu and confirm the input](GUI/Instructions/images/01-load-demo.png)
 
@@ -264,11 +291,14 @@ all are present, it asks before downloading and replacing them.
 
 The GUI launcher can also download Demo data: choose **basic demo data** for
 the MouseBrainCortex dataset or choose **all demo data** for the five maintained
-Demo datasets. For manual download, use the [direct Demo Google Drive
-folder](https://drive.google.com/drive/folders/1wFA6jO82x-OEt2BMVXm9FisyT03diZO8?usp=sharing) and preserve this layout:
+Demo datasets. For manual download, download `data.zip` individually from the
+[GUI and data ZIP download folder](https://drive.google.com/drive/folders/1c3iSZWt9nLQAtM5WBqrPggZ9tPRCRXKl?usp=sharing). Extract its contained
+`data/` folder into the repository root, keeping demo files under `data/Demo/`.
+Do not create `data/data/`. The archive includes all five demo TIFFs and their
+GUI configurations. Preserve this layout:
 
 ```text
-FACT-Code-Release/
+FACT/
 └── data/
     ├── Dataset_Download_URL.txt
     └── Demo/
@@ -292,7 +322,7 @@ The `Rep_*.ipynb` datasets are manual-download only. Download the
 Drive share](https://drive.google.com/drive/folders/1N88iCF093rot6Pn70JHtC7WBhAkL3ddz?usp=sharing), then place both folders directly beneath `data/`:
 
 ```text
-FACT-Code-Release/
+FACT/
 └── data/
     ├── NeuroFinder-Registered/
     │   ├── 0100_test/ and 0100_train/
@@ -424,7 +454,7 @@ Do not estimate or apply a different normalization range independently for every
 ## Project structure
 
 ```text
-FACT-Code-Release/
+FACT/
 ├── GUI/                 # Packaged desktop GUI download instructions
 ├── IO/                  # TIFF readers and result writers
 ├── ModelInference/      # Sliding-window inference implementation

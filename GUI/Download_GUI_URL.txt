@@ -1,22 +1,38 @@
 FACT packaged GUI download
 ===========================
 
-GUI and Demo share link:
-https://drive.google.com/drive/folders/100HG79hDwNtgq8Pa977RwJA-zxx7tfj4?usp=sharing
+Easiest standalone first trial: FACT-Pipeline_light.zip
+https://drive.google.com/file/d/1moZK8P6hIuX0UCIKTAgESQTkQ63N6kIB/view?usp=drive_link
 
-On Windows x64, double-click GUI\Download FACT-GUI_(RUN ME).bat. Before downloading,
-it offers these choices:
+Includes the complete GUI and MouseBrainCortex demo. Extract the entire ZIP,
+then open GUI\FACT-Pipeline.exe inside the extracted FACT-Pipeline_light folder.
+Choose Demo -> MouseBrainCortex. No Python installation is required.
+For more demos, run data\Download Additional Demo Data_(RUN ME).bat, select
+CA1+CA3 together, Meso, Rhesus, combinations, or all remaining demos. Restart
+the GUI afterward and choose the downloaded dataset through Demo.
 
-1. FACT-GUI only (about 4.7 GiB installed; allow about 5.2 GiB free).
-2. FACT-GUI plus basic demo data (about 6.4 GiB installed; allow about 7.1 GiB free).
-3. FACT-GUI plus all demo data (about 10.7 GiB installed; allow about 11.8 GiB free).
+Manual GUI and all-demo ZIP downloads:
+https://drive.google.com/drive/folders/1c3iSZWt9nLQAtM5WBqrPggZ9tPRCRXKl?usp=sharing
+
+Download GUI.zip and data.zip individually, rather than downloading the Drive
+folder or choosing Download all. Extract the contained GUI and data folders
+into the same parent folder (the repository root if using a clone).
+Avoid GUI\GUI\ and data\data\ nesting. Keep FACT-Pipeline.exe and the complete
+FACT-Pipeline.runtime folder beside one another inside GUI\.
+
+Automatic installation in a cloned repository
+---------------------------------------------
+Double-click GUI\Download FACT-GUI_(RUN ME).bat and select:
+1. GUI only: about 4.7 GiB installed; allow 8.5 GiB free.
+2. GUI + basic demo: about 6.4 GiB installed; allow 10.4 GiB free.
+3. GUI + all demos: about 10.7 GiB installed; allow 15.2 GiB free.
 4. Cancel.
 
-The downloader places FACT-Pipeline.exe and FACT-Pipeline.runtime directly in
-this GUI folder. It asks before replacing a complete existing installation.
-The packaged GUI expects its Demo configuration files under:
-data\Demo\GUI-Config\
+The downloader verifies GUI.zip against GUI_Archive_Manifest.json before safe
+extraction and downloads selected demo TIFFs individually. Space estimates
+include the ZIP, extraction, demo data, and temporary downloader. Keep the
+PowerShell downloader and its manifest together when obtaining updated versions.
+Existing files are preserved during missing-file repair. A complete installation
+is replaced only after confirmation. GUI configurations are in data\Demo\GUI-Config\.
 
-Demo data can also be downloaded separately with data\Download Demo data_(RUN ME).bat
-or manually from the links in data\Dataset_Download_URL.txt. Rep data is
-manual-download only and is documented there as well.
+Demo-only and reproduction data instructions: data\Dataset_Download_URL.txt.
