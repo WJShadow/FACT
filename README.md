@@ -265,13 +265,13 @@ The notebooks whose names start with `Demo_` are the maintained demonstrations f
 
 - `Demo_MouseBrainCortexQuat.ipynb`: quantized mouse brain cortex data with fast inference;
 - `Demo_RhesusQuat.ipynb`: quantized rhesus cortex data with fast inference;
-- `Demo_CA1_Noisy.ipynb`: noisy mouse hippocampus CA1 data with dense inference and FACT-guided post-processing;
+- `Demo_CA1_Noisy.ipynb`: noisy mouse hippocampus CA1 data with dense inference and FACT-guided demixing;
 - `Demo_CA3.ipynb`: mouse hippocampus CA3 data with dense inference; and
 - `Demo_meso.ipynb`: mesoscopic imaging data.
 
 The primary demonstration is `Demo_MouseBrainCortexQuat.ipynb`, which performs fast inference on quantized mouse neocortical imaging data (`data/Demo/MouseBrainCortex/MouseBrainCortex_quat.tiff`). After the Python environment, the released model weights, and this TIFF file are available, open the notebook from the repository root, select the `fact_py311` kernel, and execute all cells in sequence.
 
-The expected output is the spatiotemporal three-dimensional prediction of the FACT network. When FACT-guided background removal is applied, the pipeline returns neuronal masks and calcium-like fluorescence traces. Inspection of the network prediction, masks, and traces in the Windows GUI is recommended (see [Windows GUI download and installation](#windows-gui-download-and-installation)).
+The expected intermediate output is the spatiotemporal three-dimensional prediction of the FACT network. When FACT-guided background removal is applied, the pipeline returns neuronal masks and fluorescence traces. Inspection of the network prediction, masks, and traces in the Windows GUI is recommended (see [Windows GUI download and installation](#windows-gui-download-and-installation)).
 
 On a workstation equipped with an NVIDIA GeForce RTX 3090 GPU and an AMD Ryzen 9 5950X CPU, the primary demonstration requires approximately 3 minutes. The remaining Demo notebooks are supplementary; `Demo_meso.ipynb` is not intended as a rapid installation check.
 
@@ -438,18 +438,7 @@ np.save("fact_infer_mask3d.npy", infer_mask3d)
 np.save("fact_diff.npy", diff)
 ```
 
-The Demo notebooks also show the dataset-specific dense configuration: temporal reflect padding, overlap `(0.6, 0.6, 0.6)`, Gaussian blending, and a validated threshold. They include batch-size reduction and CPU fallback for CUDA out-of-memory errors.
-
-For code that needs the normalized video directly, use the same numeric order as the Demo notebooks: subtract and divide in `float64`, clip to `[0, 1]`, and then cast to `float32`.
-
-```python
-denominator = norm_max - norm_min
-normalized_video = np.asarray(raw_video, dtype=np.float64)
-normalized_video = (normalized_video - norm_min) / denominator
-normalized_video = np.clip(normalized_video, 0.0, 1.0).astype(np.float32)
-```
-
-Do not estimate or apply a different normalization range independently for every frame. FACT expects one range applied consistently to the complete video.
+The Demo notebooks also show the 'Dense' configuration: temporal reflect padding, overlap `(0.6, 0.6, 0.6)`, Gaussian blending, and a validated threshold. They include batch-size reduction and CPU fallback for CUDA out-of-memory errors.
 
 ## Project structure
 
