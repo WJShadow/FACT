@@ -440,6 +440,100 @@ np.save("fact_diff.npy", diff)
 
 The Demo notebooks also show the 'Dense' configuration: temporal reflect padding, overlap `(0.6, 0.6, 0.6)`, Gaussian blending, and a validated threshold. They include batch-size reduction and CPU fallback for CUDA out-of-memory errors.
 
+### Measure fluorescence from the original TIFF
+
+After post-processing has produced `masks_final`, use
+`PostSlice.TraceMeasurement.measure_raw_tiff_traces` to measure fluorescence
+directly from the original TIFF array. Supply a video shaped `(T, H, W)` and
+final masks shaped `(N, H*W)`. Each trace row corresponds to the same row in
+`masks_final`, including masks obtained through FACT-guided demixing.
+
+```python
+from IO.Read_tif import load_tiff
+from IO.TraceExport import export_trace_measurements
+from PostSlice.TraceMeasurement import measure_raw_tiff_traces
+
+raw_video = load_tiff(video_path)
+raw_measurements = measure_raw_tiff_traces(
+    masks_final,
+    raw_video,
+    infer_mask3d=infer_mask3d,
+    run_overlap_demix=True,
+    use_nnls=True,
+    alpha_max=0.9,
+)
+
+roi_traces = raw_measurements["traces_cell"]
+background_traces = raw_measurements["traces_bg"]
+final_traces = raw_measurements["traces_final"]
+
+export_trace_measurements(raw_measurements, "output/raw_tiff_traces.npy")
+```
+
+The function measures every ROI by its mask pixel mean, estimates its local
+background, and applies background subtraction followed by optional overlap
+demixing. The overlap stage uses `infer_mask3d` aligned to the TIFF's frame and
+spatial dimensions. Set `run_overlap_demix=False` to omit that stage; in this
+case `infer_mask3d` is optional. Inputs are not modified.
+
+`traces_cell` contains fluorescence before background subtraction;
+`traces_bg` contains the local background mean; `traces_final` contains the
+final corrected signal. Plot `traces_cell` directly to display fluorescence
+in the TIFF's recorded intensity units. No intensity normalization, delta-F/F0
+conversion or display smoothing is applied to these measurements. A TIFF
+that was already normalized or quantized is measured in its stored scale.
+
+### Configure background subtraction
+
+Both `measure_raw_tiff_traces` and `Post_FACT_guided_backgroundremoving`
+accept the following background settings:
+
+- `use_nnls=True`: fit one nonnegative coefficient per ROI, limited by
+  `alpha_max` (default `0.9`), with optional `alpha_min`.
+- `alpha_default=0.7`: the fallback coefficient when an automatic fit is
+  unavailable; automatic coefficients remain subject to the configured bounds.
+- `use_nnls=False, alpha_default=0.7`: subtract background using a fixed
+  coefficient. `alpha_max` does not limit the fixed coefficient.
+
+The returned `alpha_nnls` array contains the applied coefficients.
+`alpha_status` identifies automatic fits, fixed coefficients and fallbacks.
+
+### Export trace measurements
+
+`export_trace_measurements` writes the measured arrays without rescaling.
+Select any combination of `"roi"`, `"background"` and `"final"` through
+`components`; all three are selected by default.
+
+```python
+export_trace_measurements(
+    raw_measurements, "output/raw_tiff_roi.npy", components=("roi",)
+)
+export_trace_measurements(raw_measurements, "output/raw_tiff_traces.mat")
+export_trace_measurements(raw_measurements, "output/raw_tiff_traces.h5")
+```
+
+For `.npy`, the filename is a prefix: `raw_tiff_traces.npy` produces
+`raw_tiff_traces_roi.npy`, `raw_tiff_traces_background.npy`,
+`raw_tiff_traces_final.npy` and `raw_tiff_traces_metadata.json`.
+For `.mat` and `.h5`, a single file contains the selected arrays named
+`traces_cell`, `traces_bg` and `traces_final`. Metadata is stored as
+`metadata_json`, a MATLAB variable or an HDF5 file attribute.
+
+Metadata records the TIFF source and units, mask row indices, video shape,
+background coefficients and overlap settings. Arrays retain their measured
+values, shapes and dtypes. The function returns the written file paths and
+refuses to replace existing files unless `overwrite=True` is specified.
+
+### Cancel network inference
+
+`sliding_window_inference`, `sliding_window_inference_with_progress` and
+`sliding_window_inference_hdf5` accept an optional `cancel_check` callback.
+The callback can check a `threading.Event` set by another thread and raise
+`InterruptedError` when cancellation is requested. Checks occur between
+prediction batches and during output assembly; an active predictor call
+finishes before its result is checked. A cancelled call raises the exception
+instead of returning a partial prediction.
+
 ## Project structure
 
 ```text
