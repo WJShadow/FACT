@@ -51,9 +51,11 @@ def sliding_window_inference(
     buffer_steps: int | None = None,
     buffer_dim: int = -1,
     *args: Any,
+    cancel_check: Callable[[], None] | None = None,
     **kwargs: Any,
 ) -> torch.Tensor | tuple[torch.Tensor, ...] | dict[Any, torch.Tensor]:
-    
+    if cancel_check is not None:
+        cancel_check()
     buffered = buffer_steps is not None and buffer_steps > 0
     num_spatial_dims = len(inputs.shape) - 2
     if buffered:
@@ -133,6 +135,8 @@ def sliding_window_inference(
     output_image_list, count_map_list, sw_device_buffer, b_s, b_i = [], [], [], 0, 0  # type: ignore
     # for each patch
     for slice_g in tqdm(windows_range) if progress else windows_range:
+        if cancel_check is not None:
+            cancel_check()
         slice_range = range(slice_g, min(slice_g + sw_batch_size, b_slices[b_s][0] if buffered else total_slices))
         unravel_slice = [
             [slice(idx // num_win, idx // num_win + 1), slice(None)] + list(slices[idx % num_win])
@@ -143,6 +147,8 @@ def sliding_window_inference(
         else:
             win_data = inputs[unravel_slice[0]].to(sw_device)
         seg_prob_out = predictor(win_data, *args, **kwargs)  # batched patch
+        if cancel_check is not None:
+            cancel_check()
 
         # convert seg_prob_out to tuple seg_tuple, this does not allocate new memory.
         dict_keys, seg_tuple = _flatten_struct(seg_prob_out)
@@ -187,6 +193,8 @@ def sliding_window_inference(
                 count_map_list.append(torch.zeros([1, 1] + output_shape[2:], dtype=compute_dtype, device=device))
                 w_t_ = w_t.to(device)
                 for __s in slices:
+                    if cancel_check is not None:
+                        cancel_check()
                     if z_scale is not None:
                         __s = tuple(slice(int(_si.start * z_s), int(_si.stop * z_s)) for _si, z_s in zip(__s, z_scale))
                     count_map_list[-1][(slice(None), slice(None), *__s)] += w_t_
@@ -209,6 +217,9 @@ def sliding_window_inference(
 
     if non_blocking:
         torch.cuda.current_stream().synchronize()
+
+    if cancel_check is not None:
+        cancel_check()
 
     # account for any overlapping sections
     for ss in range(len(output_image_list)):
@@ -234,6 +245,8 @@ def sliding_window_inference(
     else:
         final_output = convert_to_dst_type(final_output, inputs, device=device)[0]
 
+    if cancel_check is not None:
+        cancel_check()
     return final_output  # type: ignore
 
 
@@ -256,15 +269,13 @@ def sliding_window_inference_with_progress(
     buffer_dim: int = -1,
     *args: Any,
     progress_callback: Callable[[float, int, int], None] | None = None,
+    cancel_check: Callable[[], None] | None = None,
     **kwargs: Any,
 ) -> torch.Tensor | tuple[torch.Tensor, ...] | dict[Any, torch.Tensor]:
-    """Call the original implementation while reporting completed windows.
+    """Run sliding-window inference with progress and cancellation checks."""
 
-    The original ``sliding_window_inference`` above is intentionally left
-    unchanged. Progress is observed by wrapping the predictor, which is called
-    once for every patch batch assembled by the original implementation.
-    """
-
+    if cancel_check is not None:
+        cancel_check()
     num_spatial_dims = len(inputs.shape) - 2
     overlap_tuple = ensure_tuple_rep(overlap, num_spatial_dims)
     image_size_input = tuple(int(value) for value in inputs.shape[2:])
@@ -311,6 +322,7 @@ def sliding_window_inference_with_progress(
         buffer_steps,
         buffer_dim,
         *args,
+        cancel_check=cancel_check,
         **kwargs,
     )
 
@@ -331,6 +343,7 @@ def sliding_window_inference_hdf5(
     device: torch.device | str | None = None,
     progress_callback: Callable[[float, int, int], None] | None = None,
     process_fn: Callable | None = None,
+    cancel_check: Callable[[], None] | None = None,
     **kwargs: Any,
 ) -> torch.Tensor:
     """Run sliding-window inference with the accumulators backed by HDF5.
@@ -342,6 +355,9 @@ def sliding_window_inference_hdf5(
     """
 
     import h5py
+
+    if cancel_check is not None:
+        cancel_check()
 
     if process_fn is not None:
         raise ValueError("HDF5 inference does not support process_fn for FACT predictors.")
@@ -417,6 +433,8 @@ def sliding_window_inference_hdf5(
         count_ds = None
         output_shape: tuple[int, ...] | None = None
         for slice_start in windows_range:
+            if cancel_check is not None:
+                cancel_check()
             slice_range = range(
                 slice_start,
                 min(slice_start + max(1, int(sw_batch_size)), total_slices),
@@ -433,6 +451,8 @@ def sliding_window_inference_hdf5(
             else:
                 win_data = inputs[unravel_slice[0]].to(sw_device)
             seg_prob_out = predictor(win_data, *args, **kwargs)
+            if cancel_check is not None:
+                cancel_check()
             if not isinstance(seg_prob_out, torch.Tensor):
                 raise TypeError("HDF5 FACT inference requires a tensor predictor output.")
             seg = seg_prob_out
@@ -471,6 +491,8 @@ def sliding_window_inference_hdf5(
                 # once, exactly as in the in-memory MONAI implementation.
                 weights_np = weights.detach().to(device="cpu").numpy().astype(np.float32, copy=False)
                 for spatial_slice in slices:
+                    if cancel_check is not None:
+                        cancel_check()
                     target = (slice(None), slice(None), *spatial_slice)
                     current = np.asarray(count_ds[target], dtype=np.float32)
                     np.add(current, weights_np, out=current, casting="unsafe")
@@ -505,10 +527,14 @@ def sliding_window_inference_hdf5(
 
         if output_ds is None or count_ds is None or output_shape is None:
             raise RuntimeError("FACT HDF5 inference produced no predictor output.")
+        if cancel_check is not None:
+            cancel_check()
         final_output = np.empty(output_shape, dtype=np.float32)
         first_spatial = int(output_shape[2])
         step = max(1, min(32, first_spatial))
         for start in range(0, first_spatial, step):
+            if cancel_check is not None:
+                cancel_check()
             stop = min(first_spatial, start + step)
             region = (slice(None), slice(None), slice(start, stop), *([slice(None)] * (num_spatial_dims - 1)))
             numerator = np.asarray(output_ds[region], dtype=np.float32)
@@ -535,6 +561,8 @@ def sliding_window_inference_hdf5(
                 ),
             )
         final_output = final_output[(slice(None), slice(None), *final_slicing)]
+    if cancel_check is not None:
+        cancel_check()
     return torch.from_numpy(np.ascontiguousarray(final_output, dtype=np.float32)).to(device)
 
 

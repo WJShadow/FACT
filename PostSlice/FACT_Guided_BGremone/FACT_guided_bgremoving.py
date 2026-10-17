@@ -79,4 +79,9 @@ def fact_guided_bgremoving(
         "traces_bg": traces_bg,
         "traces_cell": traces_cell,
         "alpha_nnls": alpha_nnls,
+        "alpha_fallback_count": bg_results["alpha_fallback_count"],
+        "alpha_status": bg_results["alpha_status"],
+        "empty_background": bg_results["empty_background"],
+        "override_used": bg_results["override_used"],
+        "traces_bg_rm": bg_results["traces_bg_rm"],
     }

@@ -1,4 +1,4 @@
-## Integrated ARBS in FACT
+"""Extract ROI and annular background signals and subtract background."""
 
 import numpy as np
 import scipy.sparse as sp
@@ -19,13 +19,7 @@ def fact_guided_bgremove(
     eps=1e-8,
 ):
 
-    ''' Remove background fluctuation using the adaptive-annualar background removal methods 
-    masks: all masks segmented 
-    img_shape_2d : the spatial shape of input_vid
-    input_vid: TxHxW inp
-    
-    
-    '''
+    """Subtract fitted or fixed background from row-aligned ROI traces."""
     if len(img_shape_2d) != 2:
         raise ValueError("img_shape_2d must be (H, W).")
     (H, W) = img_shape_2d
@@ -43,6 +37,12 @@ def fact_guided_bgremove(
     if input_vid.shape[1] != H or input_vid.shape[2] != W:
         raise ValueError("input_vid spatial shape must match img_shape_2d.")
 
+    if not np.isfinite(alpha_default) or alpha_default < 0:
+        raise ValueError("alpha_default must be finite and nonnegative.")
+    if np.isnan(alpha_max) or alpha_max < 0:
+        raise ValueError("alpha_max must be nonnegative.")
+    if alpha_min is not None and (not np.isfinite(alpha_min) or alpha_min < 0):
+        raise ValueError("alpha_min must be finite and nonnegative.")
     if alpha_min is not None and alpha_min > alpha_max:
         raise ValueError("alpha_min must be <= alpha_max.")
 
@@ -71,6 +71,9 @@ def fact_guided_bgremove(
             'alpha_max': float(alpha_max),
             'alpha_min': None if alpha_min is None else float(alpha_min),
             'alpha_fallback_count': 0,
+            'alpha_status': np.empty((0,), dtype='<U8'),
+            'empty_background': np.empty((0,), dtype=bool),
+            'override_used': np.empty((0,), dtype=bool),
         }
 
     # Build per-neuron exclusion zones and rings with guaranteed length n.
@@ -194,6 +197,7 @@ def fact_guided_bgremove(
         traces_current[override_valid_mask, :] = traces_cell_override[override_valid_mask, :]
 
     alpha_nnls = np.full(current_masks.shape[0], float(alpha_default), dtype=np.float64)
+    alpha_status = np.full(n, 'nnls' if use_nnls else 'fixed', dtype='<U8')
 
     if use_nnls:
         fallback_count = 0
@@ -209,13 +213,17 @@ def fact_guided_bgremove(
                 or not np.all(np.isfinite(b_i))
             ):
                 alpha_i = float(alpha_default)
+                alpha_status[i] = 'fallback'
                 fallback_count += 1
             else:
                 try:
                     alpha_i, _ = nnls(b_i.reshape(-1, 1), y_i)
                     alpha_i = float(alpha_i[0])
+                    if not np.isfinite(alpha_i):
+                        raise ValueError("Nonfinite background coefficient.")
                 except Exception:
                     alpha_i = float(alpha_default)
+                    alpha_status[i] = 'fallback'
                     fallback_count += 1
 
             if alpha_min is not None:
@@ -223,7 +231,7 @@ def fact_guided_bgremove(
             alpha_i = min(float(alpha_max), alpha_i)
             alpha_nnls[i] = alpha_i
     else:
-        fallback_count = n
+        fallback_count = 0
 
     traces_bg_rm = traces_current - alpha_nnls[:, None] * traces_bg_current
 
@@ -238,6 +246,8 @@ def fact_guided_bgremove(
         'alpha_max': float(alpha_max),
         'alpha_min': None if alpha_min is None else float(alpha_min),
         'alpha_fallback_count': int(fallback_count),
+        'alpha_status': alpha_status,
+        'empty_background': areas_bg_current <= eps,
     }
 
     return traces_results

@@ -523,6 +523,10 @@ def Post_FACT_guided_backgroundremoving(
             "traces_cell": bg_results["traces_cell"],
             "alpha_nnls": bg_results["alpha_nnls"],
             "alpha_fallback_count": bg_results.get("alpha_fallback_count", 0),
+            "alpha_status": bg_results["alpha_status"],
+            "empty_background": bg_results["empty_background"],
+            "override_used": bg_results["override_used"],
+            "traces_bg_rm": bg_results["traces_bg_rm"],
         }
 
     from PostSlice.com.Overlap_cancel import fact_guided_overlap_demixing
@@ -558,4 +562,8 @@ def Post_FACT_guided_backgroundremoving(
         "traces_cell": bg_results["traces_cell"],
         "alpha_nnls": bg_results["alpha_nnls"],
         "alpha_fallback_count": bg_results.get("alpha_fallback_count", 0),
+        "alpha_status": bg_results["alpha_status"],
+        "empty_background": bg_results["empty_background"],
+        "override_used": bg_results["override_used"],
+        "traces_bg_rm": bg_results["traces_bg_rm"],
     }
