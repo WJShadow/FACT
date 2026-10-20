@@ -31,7 +31,7 @@
     "sc2_elongation": 0.4,
     "fact_guided_demixing": true,
     "overlap_demixing": true,
-    "postprocess_video_source": "normalized",
+    "postprocess_video_source": "raw",
     "sc1_mode": 0,
     "sc2": true,
     "sc3": false,

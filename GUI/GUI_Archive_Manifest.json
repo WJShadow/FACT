@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "fileId": "1_Tm0jAzrJ2Dx1ciqOfS3t54o6rTarT5L",
   "archiveName": "GUI.zip",
-  "sha256": "b81771aa36cf0c67ef8ad070fbd77781be92b903c0051bc8f9062089f0c982eb",
-  "compressedBytes": 2772801544,
-  "expandedBytes": 4998744175,
+  "sha256": "ede5d1e299ad19db769d8b27448a6517c35f2c9d3eb0c5c5daf7a554dcd5d2ff",
+  "compressedBytes": 2772829816,
+  "expandedBytes": 4998776194,
   "files": [
     {
       "path": "GUI/FACT-Pipeline.exe",
-      "size": 81910911
+      "size": 81942930
     },
     {
       "path": "GUI/FACT-Pipeline.runtime/api-ms-win-core-console-l1-1-0.dll",
