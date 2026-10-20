@@ -440,12 +440,30 @@ np.save("fact_diff.npy", diff)
 
 The Demo notebooks also show the 'Dense' configuration: temporal reflect padding, overlap `(0.6, 0.6, 0.6)`, Gaussian blending, and a validated threshold. They include batch-size reduction and CPU fallback for CUDA out-of-memory errors.
 
-### Measure fluorescence from the original TIFF
+### Select the trace video source
 
-After post-processing has produced `masks_final`, use
-`PostSlice.TraceMeasurement.measure_raw_tiff_traces` to measure fluorescence
-directly from the original TIFF array. Supply a video shaped `(T, H, W)` and
-final masks shaped `(N, H*W)`. Each trace row corresponds to the same row in
+Network inference uses the normalized video. For trace extraction, select
+either the original TIFF array or the normalized video:
+
+```python
+trace_source = "raw"  # "raw" or "normalized"
+trace_video = raw_video if trace_source == "raw" else normalized_video
+```
+
+Pass `trace_video` as `input_img` to both `Post_FACT_guided_demixing` and
+`Post_FACT_guided_backgroundremoving`. Use the same source throughout these
+stages, and rerun them when changing the source.
+
+With `"raw"`, the pipeline extracts traces directly from the original TIFF.
+
+If you use the normalized video as the trace source for post-processing and
+also need traces in the original TIFF intensity scale, use
+`measure_raw_tiff_traces` with the final masks and the original TIFF array.
+This produces an additional set of ROI, background and final traces while
+retaining the normalized-source results.
+
+Supply a video shaped `(T, H, W)` and final masks shaped `(N, H*W)`.
+Each trace row corresponds to the same row in
 `masks_final`, including masks obtained through FACT-guided demixing.
 
 ```python
