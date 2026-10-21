@@ -48,6 +48,7 @@ $OldPipCacheDir = $null
 $HadPipCacheDir = $false
 $ExitCode = 1
 $PathAddedByThisRun = $false
+$InstallTargetOwnedByThisRun = $false
 
 function Write-Log {
     param([Parameter(Mandatory = $true)][string]$Message)
@@ -375,9 +376,11 @@ try {
     if (Test-Path -LiteralPath $InstallMarker) {
         $marker = Get-Content -LiteralPath $InstallMarker -Raw | ConvertFrom-Json
         if (-not [String]::Equals([string]$marker.environmentPath, [IO.Path]::GetFullPath($EnvironmentPath), [StringComparison]::OrdinalIgnoreCase)) { throw "An installation marker belongs to another path: $InstallMarker" }
+        $InstallTargetOwnedByThisRun = $true
         Write-Log 'A previous interrupted FACT installation was found; cleaning its incomplete target.'
         Remove-EnvironmentSafely
         Remove-Item -LiteralPath $InstallMarker -Force
+        $InstallTargetOwnedByThisRun = $false
     }
     if (Test-Path -LiteralPath $EnvironmentPath) { throw "The target path already exists. Refusing to overwrite: $EnvironmentPath" }
 
@@ -388,6 +391,7 @@ try {
         started = (Get-Date).ToUniversalTime().ToString('o')
     }
     $markerObject | ConvertTo-Json | Set-Content -LiteralPath $InstallMarker -Encoding UTF8
+    $InstallTargetOwnedByThisRun = $true
 
     if ($resolvedMode -eq 'Online') {
         Install-OnlineEnvironment
@@ -417,7 +421,7 @@ catch {
             Remove-PrivateCondaFromUserPath
             $PathAddedByThisRun = $false
         }
-        if (Test-Path -LiteralPath $InstallMarker) {
+        if ($InstallTargetOwnedByThisRun -and (Test-Path -LiteralPath $InstallMarker)) {
             Remove-EnvironmentSafely
             Remove-Item -LiteralPath $InstallMarker -Force
             Write-Log 'Incomplete target cleanup completed.'

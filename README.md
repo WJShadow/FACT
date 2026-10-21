@@ -271,7 +271,7 @@ The notebooks whose names start with `Demo_` are the maintained demonstrations f
 
 The primary demonstration is `Demo_MouseBrainCortexQuat.ipynb`, which performs fast inference on quantized mouse neocortical imaging data (`data/Demo/MouseBrainCortex/MouseBrainCortex_quat.tiff`). After the Python environment, the released model weights, and this TIFF file are available, open the notebook from the repository root, select the `fact_py311` kernel, and execute all cells in sequence.
 
-The expected intermediate output is the spatiotemporal three-dimensional prediction of the FACT network. When FACT-guided background removal is applied, the pipeline returns neuronal masks and fluorescence traces. Inspection of the network prediction, masks, and traces in the Windows GUI is recommended (see [Windows GUI download and installation](#windows-gui-download-and-installation)).
+The expected intermediate output is the spatiotemporal three-dimensional prediction of the FACT network. When FACT-guided background removal is applied, the pipeline returns neuronal masks and fluorescence traces. Inspection of the network prediction, masks, and traces in the Windows GUI is recommended (see [Windows GUI download and installation](#windows-gui-download-and-installation-in-cloned-code-repository)).
 
 On a workstation equipped with an NVIDIA GeForce RTX 3090 GPU and an AMD Ryzen 9 5950X CPU, the primary demonstration requires approximately 3 minutes. The remaining Demo notebooks are supplementary; `Demo_meso.ipynb` is not intended as a rapid installation check.
 
@@ -349,7 +349,7 @@ ModelParams/FACT_Modelparams.pt
 
 ## Instructions for use (code version)
 
-To run FACT on a user-provided recording, supply a three-dimensional grayscale TIFF video. The input used by the maintained notebooks is a NumPy array of shape `(T, H, W)`, where `T` is the number of frames. After network inference, apply FACT-guided background removal in post-processing to obtain neuronal masks and traces. The Windows GUI is recommended for inspecting the spatiotemporal network prediction, masks, and traces (see [Windows GUI download and installation](#windows-gui-download-and-installation)). Set `target_radius` to the expected mean neuronal radius in pixels.
+To run FACT on a user-provided recording, supply a three-dimensional grayscale TIFF video. The input used by the maintained notebooks is a NumPy array of shape `(T, H, W)`, where `T` is the number of frames. After network inference, apply FACT-guided background removal in post-processing to obtain neuronal masks and traces. The Windows GUI is recommended for inspecting the spatiotemporal network prediction, masks, and traces (see [Windows GUI download and installation](#windows-gui-download-and-installation-in-cloned-code-repository)). Set `target_radius` to the expected mean neuronal radius in pixels.
 
 The following example follows the direct loading and inference workflow of the Demo notebooks. Run it from the repository root and replace `video_path` with the path to the TIFF file of interest.
 
@@ -465,6 +465,9 @@ retaining the normalized-source results.
 Supply a video shaped `(T, H, W)` and final masks shaped `(N, H*W)`.
 Each trace row corresponds to the same row in
 `masks_final`, including masks obtained through FACT-guided demixing.
+If you have only run the inference example above, first run the
+[simple post-processing example](#simple-post-processing-example) at the end
+of this section to create `masks_final`.
 
 ```python
 from IO.Read_tif import load_tiff
@@ -552,6 +555,61 @@ prediction batches and during output assembly; an active predictor call
 finishes before its result is checked. A cancelled call raises the exception
 instead of returning a partial prediction.
 
+### Simple post-processing example
+
+Run this after the inference example above. It follows the simple
+MouseBrainCortex Demo workflow: spatial consolidation, ROI-mean trace
+extraction and background subtraction. The numeric parameters below are
+the MouseBrainCortex Demo values; adjust them for your own recording.
+Choose the trace source consistently for all trace-processing stages.
+
+```python
+from PostSlice.PostProcess_Pipeline import (
+    Post_FACT_guided_backgroundremoving,
+    Post_standard_spatial_consolidation,
+    extract_roi_mean_traces,
+)
+
+trace_source = "raw"  # "raw" or "normalized"
+trace_video = raw_video if trace_source == "raw" else normalized_video
+mask_shape_2d = infer_mask3d.shape[1:]
+
+masks_final, _timestamps_final = Post_standard_spatial_consolidation(
+    infer_mask3d,
+    mask_shape_2d=mask_shape_2d,
+    min_area=30,
+    max_area=230,
+    thresh_com=4.0,
+    thresh_com_refine=7.0,
+    thresh_refine=0.2,
+    thresh_iou=0.7,
+    thresh_consume=(1 + 0.7) / 2,
+    thresh_acti=4,
+    num_workers=8,
+    empty_safe=True,
+)
+masks_final = (masks_final.tocsr() > 0).astype(np.int64)
+traces_roi_init = extract_roi_mean_traces(masks_final, trace_video)
+sources = np.zeros(masks_final.shape[0], dtype=bool)
+
+background_result = Post_FACT_guided_backgroundremoving(
+    masks_final,
+    traces_roi_init,
+    sources,
+    infer_mask3d=infer_mask3d,
+    input_img=trace_video,
+    mask_shape_2d=mask_shape_2d,
+    run_overlap_demix=False,
+    binarize_final=True,
+)
+masks_final = (background_result["masks_final"].tocsr() > 0).astype(np.int64)
+roi_traces = np.asarray(background_result["traces_cell"], dtype=np.float32)
+background_traces = np.asarray(background_result["traces_bg"], dtype=np.float32)
+final_traces = np.asarray(background_result["traces_final"], dtype=np.float32)
+
+print(f"Final masks: {masks_final.shape}; traces: {final_traces.shape}")
+```
+
 ## Project structure
 
 ```text
@@ -588,7 +646,7 @@ The following optional steps reproduce the evaluation notebooks in this release.
 - **A Demo reports that a TIFF file is missing:** download the Demo data and preserve the directory names shown above.
 - **The model file is missing:** confirm that `ModelParams/FACT_Modelparams.pt` exists in the cloned release.
 - **CUDA is unavailable:** check the NVIDIA driver and `torch.cuda.is_available()`. CPU inference is supported but slower.
-- **CUDA runs out of memory:** use `mode="Fast"`; the maintained backend also reduces the sliding-window batch size automatically.
+- **CUDA runs out of memory:** reduce `sw_batch_size` to `1` and use `mode="constant"` in `sliding_window_inference` (`mode` accepts `"constant"` or `"gaussian"`). If one patch still does not fit on the GPU, move the model to CPU and set `sw_device=torch.device("cpu")`. The maintained Demo notebooks implement batch-size reduction and CPU fallback automatically.
 - **The Windows installer fails:** inspect the newest log under `%LOCALAPPDATA%\FACT\logs`.
 - **The packaged GUI is Windows-only:** on Linux, run the notebooks rather than the desktop application.
 

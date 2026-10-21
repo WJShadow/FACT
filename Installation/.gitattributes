@@ -1,0 +1,3 @@
+# The payload manifest hashes these JSON bytes; checkout conversion must be stable.
+reference/fact_py311_reference.json text eol=lf
+payloads/online/payload-manifest.json text eol=lf
