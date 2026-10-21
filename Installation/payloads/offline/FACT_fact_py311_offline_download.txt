@@ -21,7 +21,7 @@ Then run:
 Installation\payloads\offline\FACT-fact_py311-offline\Install_FACT_Offline_on_Win64.bat
 
 Complete ZIP SHA-256:
-8bfade5c0ebeaf4aa91a6546e3f6ad0408b06e5ec26fff7b06931189b2d1802f
+824f672e04ae1da82911c104a804975511618ac1708c69fed521dff9acb587d8
 
 The offline package must contain its own Installation\payloads\offline files,
 installer scripts, reference manifest, and Activate_FACT.bat. Do not upload
